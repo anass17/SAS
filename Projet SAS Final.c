@@ -12,15 +12,16 @@ struct etudiant {
 typedef struct etudiant etudiant;
 
 void menuPrincipal();
-int ajouterEtudiant(etudiant tab[], int total);
+int ajouterEtudiant(etudiant tab[], int total, char dep[][30], int *depCount);
+void afficherEtudiants(etudiant tab[], int total, char dep[][30]);
 
 int main() {
-	etudiant listeEtudiants[100];
-	int totalEtudiant = 0;
+	etudiant listeEtudiants[100] = {{12, "Boutaib", "Anass", "2001-03-06", 0, 17.75}};
+	int totalEtudiant = 1;
 	int choix;
 	
-	char departements[30][30];
-	int departmentsCount = 0;
+	char departements[30][30] = {"Informatique"};
+	int departmentsCount = 1;
 	
 	while (1) {
 		menuPrincipal();
@@ -28,7 +29,8 @@ int main() {
 		
 		switch(choix) {
 			case 1:
-				ajouterEtudiant(listeEtudiants, totalEtudiant, departements, departmentsCount);
+				totalEtudiant = ajouterEtudiant(listeEtudiants, totalEtudiant, departements, &departmentsCount);
+				afficherEtudiants(listeEtudiants, totalEtudiant, departements);
 				break;
 			case 0:
 				printf("\nMerci pour l'utilisation de ce programme. Au revoir!\n");
@@ -57,8 +59,20 @@ void menuPrincipal() {
 	printf("\n-->  ");
 }
 
-int ajouterEtudiant(etudiant tab[], int total, ) {
-	int choix;
+void afficherEtudiants(etudiant tab[], int total, char dep[][30]) {
+	int i;
+	for (i = 0; i < total; i++) {
+		printf("Numero unique:      %d\n", tab[i].numero);
+		printf("Nom Complete:       %s %s\n", tab[i].prenom, tab[i].nom);
+		printf("Date de naissance:  %s\n", tab[i].dateNaissance);
+		printf("Departement:        %s\n", dep[tab[i].departement]);
+		printf("Note:               %.2f\n", tab[i].note);
+		printf("\n");
+	}
+}
+
+int ajouterEtudiant(etudiant tab[], int total, char dep[][30], int *depCount) {
+	int choix, i, depTemp;
 	
 	printf("\n");
 	printf("-------------------\n");
@@ -89,10 +103,39 @@ int ajouterEtudiant(etudiant tab[], int total, ) {
 			scanf("%s", tab[total].prenom);
 			printf("Date de naissance (yyyy-mm-dd):  ");
 			scanf("%s", tab[total].dateNaissance);
-			printf("Department:     \n");
-			scanf("%d", &tab[total].departement);
+			
+			// Departement
+			
+			while (1) {
+				
+				printf("\nVeuillez selectionnez ou ajouter un nouveau departement:\n");
+				for (i = 0; i < *depCount; i++) {
+					printf("%d. %s\n", i + 1, dep[i]);
+				}
+				printf("0. Lier l'etudiant a un nouveau departement\n");
+				printf("\n-->  ");
+				scanf("%d", &depTemp);
+				
+				if (depTemp > 0 && depTemp <= *depCount) {
+					tab[total].departement = depTemp - 1;
+					break;
+				} else if (depTemp == 0) {
+					printf("Entrer le nom de ce nouveau departement:  ");
+					scanf("%s", dep[*depCount]);
+					tab[total].departement = *depCount;
+					(*depCount)++;
+					printf("\nLe nouveau departement a ete ajoute\n\n");
+					break;
+				} else {
+					printf("\n### ( ! ) Veillez choisir un parmi les departement valable ou ajouter un nouveau ###\n");
+				}
+			}
+			
+			// Note Generale
+			
 			printf("Note generale:  ");
 			scanf("%f", &tab[total].note);
+			
 			printf("\nL'etudiant \"%s %s\" a ete ajoute\n", tab[total].prenom, tab[total].nom);
 			return ++total;
 		}
@@ -112,3 +155,12 @@ int ajouterEtudiant(etudiant tab[], int total, ) {
 		}
 	}
 }
+
+//int modifierEtudiant() {
+//	int nbrUnique;
+//	
+//	printf("\nVeuillez entrer le numero unique de l'etudiant a modidfier:  ");
+//	scanf("%d", &nbrUnique);
+//	
+//	
+//}
