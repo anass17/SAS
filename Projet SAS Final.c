@@ -20,6 +20,7 @@ int supprimerEtudiant(etudiant tab[], int total);
 int calculMoyenne(etudiant tab[], int total, char dep[][30], int depCount);
 void rechercherEtudiant(etudiant tab[], int total, char dep[][30], int depCount);
 void statistiques(etudiant tab[], int total, char dep[][30], int depCount);
+void trierEtudiants(etudiant tab[], int total, char dep[][30]);
 
 int main() {
 	etudiant listeEtudiants[100] = 
@@ -27,15 +28,21 @@ int main() {
 		{1, "Boutaib", "Anass", "2001-03-06", 0, 17.75}, 
 		{2, "Samih", "Mohamed", "2006-02-07", 1, 16}, 
 		{3, "Chahbone", "Achraf", "1998-06-23", 0, 16.5},
-		{4, "Saadaoui", "Ali", "1999-07-13", 1, 12},
+		{4, "Asami", "Fatiha", "1999-07-13", 1, 12},
 		{5, "Sarab", "Youssef", "2003-05-12", 1, 18.6},
 		{6, "Fahim", "Ahmed", "2002-06-22", 1, 9.75},
+		{7, "Labid", "Abdelmalek", "2000-11-25", 0, 18.75},
+		{8, "Edderkaoui", "Oussama", "1998-11-21", 0, 16.25},
+		{9, "Ait mokhtar", "Abdelhafid", "2003-10-01", 0, 14.5},
+		{10, "Taoudi", "Ahmad", "2002-09-21", 4, 12.75},
+		{11, "Bourhman", "Karima", "1999-03-11", 3, 7.5},
+		{12, "Saadaoui", "Ali", "1998-11-28", 3, 6.45},
 	};
-	int totalEtudiant = 6;
+	int totalEtudiant = 12;
 	int choix;
 	
-	char departements[30][30] = {"Informatique", "Mathematique", "Chimie"};
-	int departementsCount = 3;
+	char departements[30][30] = {"Informatique", "Mathematique", "Chimie", "Physique", "Biologie"};
+	int departementsCount = 5;
 	
 	while (1) {
 		menuPrincipal();
@@ -72,6 +79,9 @@ int main() {
 			case 6:
 				rechercherEtudiant(listeEtudiants, totalEtudiant, departements, departementsCount);
 				break;
+			case 7:
+				trierEtudiants(listeEtudiants, totalEtudiant, departements);
+				break;
 			case 0:
 				printf("\nMerci pour l'utilisation de ce programme. Au revoir!\n");
 				return;
@@ -101,13 +111,23 @@ void menuPrincipal() {
 
 void afficherEtudiants(etudiant tab[], int total, char dep[][30]) {
 	int i;
+	char nomComplete[61];
+	
+	printf("+----------------------------------------------------------------------------------------------+\n");
+	printf("| %-10s | %-30s | %-10s | %-20s | %-10s |\n", "No.", "Nom Complete", "Naissance", "Departement", "Note");
+	printf("+----------------------------------------------------------------------------------------------+\n");
 	for (i = 0; i < total; i++) {
-		printf("Numero unique:      %d\n", tab[i].numero);
-		printf("Nom Complete:       %s %s\n", tab[i].prenom, tab[i].nom);
-		printf("Date de naissance:  %s\n", tab[i].dateNaissance);
-		printf("Departement:        %s\n", dep[tab[i].departement]);
-		printf("Note:               %.2f\n", tab[i].note);
-		printf("\n");
+//		printf("Numero unique:      %d\n", tab[i].numero);
+//		printf("Nom Complete:       %s %s\n", tab[i].nom, tab[i].prenom);
+//		printf("Date de naissance:  %s\n", tab[i].dateNaissance);
+//		printf("Departement:        %s\n", dep[tab[i].departement]);
+//		printf("Note:               %.2f\n", tab[i].note);
+//		printf("\n");
+		strcpy(nomComplete, tab[i].nom);
+		strcat(nomComplete, " ");
+		strcat(nomComplete, tab[i].prenom);
+		printf("| %-10d | %-30s | %-10s | %-20s | %-10.2f |\n", tab[i].numero, nomComplete, tab[i].dateNaissance, dep[tab[i].departement], tab[i].note);
+		printf("+----------------------------------------------------------------------------------------------+\n");
 	}
 }
 
@@ -611,4 +631,111 @@ void statistiques(etudiant tab[], int total, char dep[][30], int depTotal) {
 		default:
 			printf("\nCe choix n'est pas valid\n");
 	}
+}
+
+void trierEtudiants(etudiant tab[], int total, char dep[][30]) {
+	int i, j, choix;
+	etudiant temp;
+	
+	printf("\n");
+	printf("-------------------------------\n");
+	printf("---   Trier les etudiants   ---\n");
+	printf("-------------------------------\n");
+	printf("\n");
+	
+	printf("\nTri les etudiants par:\n");
+	printf("1. L'order alphabetique des noms\n");
+	printf("2. La moyenne generale\n");
+	printf("3. Leur statut de reussite\n");
+	printf("0. Annuler\n");
+	printf("\n-->  ");
+	scanf("%d", &choix);
+	
+	switch (choix) {
+		case 1:
+			while (1) {
+				printf("\nTri Les etudiants par le nom:\n");
+				printf("1. De A a Z\n");
+				printf("2. De Z a A\n");
+				printf("0. Annuler\n");
+				printf("\n-->  ");
+				scanf("%d", &choix);
+			
+				switch (choix) {
+					case 1:
+						for (i = 0; i < total - 1; i++) {
+							for (j = 0; j < total - i - 1; j++) {
+								if (strcmp(tab[j].nom, tab[j + 1].nom) > 0) {
+									temp = tab[j];
+									tab[j] = tab[j + 1];
+									tab[j + 1] = temp;
+								}
+							}
+						}
+						afficherEtudiants(tab, total, dep);
+						return;
+					case 2:
+						for (i = 0; i < total - 1; i++) {
+							for (j = 0; j < total - i - 1; j++) {
+								if (strcmp(tab[j].nom, tab[j + 1].nom) < 0) {
+									temp = tab[j];
+									tab[j] = tab[j + 1];
+									tab[j + 1] = temp;
+								}
+							}
+						}
+						afficherEtudiants(tab, total, dep);
+						return;
+					case 0:
+						printf("\nL'operation a ete annuler\n");
+						return;
+					default:
+						printf("\nCe choix n'est pas valide\n");
+				}
+			}
+			break;
+		case 2:
+			while (1) {
+				printf("\nTri Les etudiants par la moyenne generale selon l'order:\n");
+				printf("1. Croissant\n");
+				printf("2. Decroissant\n");
+				printf("0. Annuler\n");
+				printf("\n-->  ");
+				scanf("%d", &choix);	
+				
+				switch (choix) {
+					case 1:
+						for (i = 0; i < total - 1; i++) {
+							for (j = 0; j < total - i - 1; j++) {
+								if (tab[j].note > tab[j + 1].note > 0) {
+									temp = tab[j];
+									tab[j] = tab[j + 1];
+									tab[j + 1] = temp;
+								}
+							}
+						}
+						afficherEtudiants(tab, total, dep);
+						return;
+					case 2:
+						for (i = 0; i < total - 1; i++) {
+							for (j = 0; j < total - i - 1; j++) {
+								if (tab[j].note > tab[j + 1].note < 0) {
+									temp = tab[j];
+									tab[j] = tab[j + 1];
+									tab[j + 1] = temp;
+								}
+							}
+						}
+						afficherEtudiants(tab, total, dep);
+						return;
+					case 0:
+						printf("\nL'operation a ete annuler\n");
+						return;
+					default:
+						printf("\nCe choix n'est pas valide\n");
+				}
+			}
+			break;
+	}
+	
 }
